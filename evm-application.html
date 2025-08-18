@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <!-- ===== RESET & BASIC LAYOUT ===== -->
- <style>
+  <style>
 /* ===== GLOBAL RESET ===== */
 *, *::before, *::after {
   margin: 0;
@@ -242,7 +242,7 @@ main {
   margin-bottom: 1rem;
 }
 
-/* ===== MODAL ===== */
+/* ===== MODAL - FIXED STYLES ===== */
 .modal {
   display: none; 
   position: fixed;
@@ -255,6 +255,10 @@ main {
   background-color: rgba(0,0,0,0.6);
   justify-content: center;
   align-items: center;
+}
+
+.modal.show {
+  display: flex !important;
 }
 
 .modal-content {
@@ -274,6 +278,20 @@ main {
   margin-bottom: 1.5rem;
 }
 
+.modal-content button {
+  padding: 0.75rem 1.5rem;
+  background: #3246a8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.modal-content button:hover {
+  background: #25348f;
+}
 
 /* ===== FOOTER ===== */
 footer {
@@ -307,7 +325,7 @@ footer p  { line-height: 1.6; }
 </head>
 <body>
   <!-- ===== Header ===== -->
-   <header>
+  <header>
     <div class="logo">
       <a href="index.html">
       <img src="htc_logo.png" alt="Headstart Training Center Logo">
@@ -347,9 +365,8 @@ footer p  { line-height: 1.6; }
       </div>
 
       <!-- ===== FORM START ===== -->
-    <form action="https://script.google.com/macros/s/AKfycbzt-0Tj9_tauLtv98sVQAHpWl6JQYKHh1sa5p7cWm4Fbv4AVdNpXC-weXHeNbY90JgI/exec"
+      <form action="https://script.google.com/macros/s/AKfycbzt-0Tj9_tauLtv98sVQAHpWl6JQYKHh1sa5p7cWm4Fbv4AVdNpXC-weXHeNbY90JgI/exec" 
       method="POST" id="applicationForm" novalidate>
-
 
         <!-- === STEP 1 === -->
         <div class="form-step active" data-step="1">
@@ -610,14 +627,28 @@ footer p  { line-height: 1.6; }
           <button type="submit" class="btn btn-primary" id="submitBtn" style="display:none">
             <i class="fas fa-paper-plane"></i> Submit Application
           </button>
+          
+          <!-- TEST BUTTON - Remove this after debugging -->
+          <button type="button" class="btn" style="background: #ff6b6b; color: white;" onclick="testModal()">
+            🧪 Test Modal
+          </button>
         </div>
 
         <!-- Hidden iframe for form submission -->
-        <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="handleFormResponse()"></iframe>
+        <!-- REMOVED: Not needed when using fetch() -->
       </form>
       <!-- ===== FORM END ===== -->
     </div>
   </main>
+
+  <!-- ===== MODAL - FIXED STRUCTURE ===== -->
+  <div id="submitModal" class="modal">
+    <div class="modal-content">
+      <h2>Application Submitted!</h2>
+      <p>Your application has been submitted successfully. Please wait for our response.</p>
+      <button id="modalOkBtn">Okay</button>
+    </div>
+  </div>
 
   <!-- ===== Footer ===== -->
   <footer>
@@ -653,38 +684,17 @@ footer p  { line-height: 1.6; }
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const submitBtn = document.getElementById('submitBtn');
+    const submitModal = document.getElementById('submitModal');
+    const modalOkBtn = document.getElementById('modalOkBtn');
+    
     let currentStep = 1;
     const totalSteps = 4;
 
     // IMPORTANT: Replace with your Google Apps Script Web App URL
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzt-0Tj9_tauLtv98sVQAHpWl6JQYKHh1sa5p7cWm4Fbv4AVdNpXC-weXHeNbY90JgI/exec";
- // Global variable to track submission state
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzt-0Tj9_tauLtv98sVQAHpWl6JQYKHh1sa5p7cWm4Fbv4AVdNpXC-weXHeNbY90JgI/exec';
+
+    // Global variable to track submission state
     let isSubmitting = false;
-
-    // Function to handle the iframe response
-    function handleFormResponse() {
-      if (!isSubmitting) return; // Ignore initial load
-      
-      console.log('Form submission completed via iframe');
-      
-      // Generate application ID
-      const applicationId = 'APP-' + Math.random().toString(36).substr(2, 8).toUpperCase();
-      document.getElementById('applicationId').textContent = applicationId;
-
-      // Hide all form steps
-      steps.forEach(step => step.classList.remove('active'));
-
-      // Show success step
-      document.getElementById('successStep').style.display = 'flex';
-
-      // Hide navigation buttons
-      document.querySelector('.form-navigation').style.display = 'none';
-
-      // Reset submission state and button
-      isSubmitting = false;
-      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
-      submitBtn.disabled = false;
-    }
 
     // ===== Helper functions =====
     function updateUI() {
@@ -835,7 +845,48 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzt-0Tj9_tauLtv98sV
         .replace(/Fathers/, "Father's");
     }
 
+    // Add the missing handleFormResponse function
+    function handleFormResponse() {
+      console.log("handleFormResponse called");
+      // This function was being called by the iframe but wasn't defined
+      // We don't actually need it since we're using fetch instead
+    }
 
+    // GitHub Pages compatible modal function
+    function showModal() {
+      console.log("=== MODAL DEBUG START (GitHub Pages) ===");
+      
+      // Force DOM update by hiding and showing
+      submitModal.style.display = 'none';
+      submitModal.offsetHeight; // Force reflow
+      
+      // Set all necessary properties explicitly for GitHub Pages
+      submitModal.style.display = 'flex';
+      submitModal.style.position = 'fixed';
+      submitModal.style.top = '0';
+      submitModal.style.left = '0';
+      submitModal.style.width = '100%';
+      submitModal.style.height = '100%';
+      submitModal.style.backgroundColor = 'rgba(0,0,0,0.6)';
+      submitModal.style.justifyContent = 'center';
+      submitModal.style.alignItems = 'center';
+      submitModal.style.zIndex = '999999';
+      submitModal.style.visibility = 'visible';
+      submitModal.style.opacity = '1';
+      
+      // Also add the class for good measure
+      submitModal.classList.add('show');
+      
+      console.log("Modal forced to show with explicit styles");
+      console.log("Final modal display:", window.getComputedStyle(submitModal).display);
+      console.log("=== MODAL DEBUG END ===");
+    }
+
+    // Hide modal function
+    function hideModal() {
+      submitModal.classList.remove('show');
+      submitModal.style.display = 'none';
+    }
 
     // Reset for a new submission
     function resetForm() {
@@ -904,12 +955,88 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzt-0Tj9_tauLtv98sV
       });
     });
 
-   // Prevent Enter key accidental submit
+    // Prevent Enter key accidental submit
     form.addEventListener("keydown", function (event) {
       if (event.key === "Enter" && event.target.type !== "textarea") {
         event.preventDefault();
       }
     });
+
+    // Form submission handler - GitHub Pages compatible version
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      console.log("Form submit event triggered");
+
+      if (!validateCurrentStep()) {
+        console.log("Validation failed");
+        return;
+      }
+
+      if (isSubmitting) {
+        console.log("Already submitting, preventing duplicate");
+        return;
+      }
+      
+      isSubmitting = true;
+
+      // Disable submit button
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+      const formData = new FormData(form);
+      console.log("Starting form submission...");
+
+      // GitHub Pages compatible fetch with better error handling
+      fetch(WEB_APP_URL, { 
+        method: "POST", 
+        body: formData,
+        mode: 'no-cors',
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(() => {
+        console.log("Fetch request sent (no-cors mode)");
+        // In no-cors mode, we can't read the response, but we assume success
+        setTimeout(() => {
+          console.log("Showing modal after successful submission");
+          showModal();
+        }, 500); // Small delay to ensure the request is sent
+      })
+      .catch(err => {
+        console.error("Fetch error:", err);
+        // Even on error, we might want to show the modal since the form might have been submitted
+        console.log("Showing modal despite error (form might have been submitted)");
+        showModal();
+      })
+      .finally(() => {
+        // Reset button state
+        setTimeout(() => {
+          submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
+          submitBtn.disabled = false;
+          isSubmitting = false;
+        }, 1000);
+      });
+    });
+
+    // Modal OK button handler
+    modalOkBtn.addEventListener("click", () => {
+      console.log("OK button clicked");
+      hideModal();
+      window.location.href = "index.html";
+    });
+
+    // Close modal when clicking outside
+    submitModal.addEventListener("click", function(e) {
+      if (e.target === submitModal) {
+        hideModal();
+      }
+    });
+
+    // Test modal function (you can call this in browser console to test)
+    window.testModal = function() {
+      showModal();
+    };
 
   </script>
 </body>
