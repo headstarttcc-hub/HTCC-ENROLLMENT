@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Step Application Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 60px;
+            right: -20px;
+            height: 2px;
+            background: #dee2e6;
+            z-index: 1;
+        }
+
+        .step:last-child::after {
+            display: none;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #dee2e6;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-number {
+            background: #667eea;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #28a745;
+            color: white;
+        }
+
+        .step.completed .step-number::after {
+            content: '✓';
+        }
+
+        .step-label {
+            margin-left: 1rem;
+            font-weight: 500;
+            color: #6c757d;
+            transition: color 0.3s ease;
+        }
+
+        .step.active .step-label {
+            color: #667eea;
+        }
+
+        .step.completed .step-label {
+            color: #28a745;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e9ecef;
+            margin: 1rem 2rem 0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .form-container {
+            padding: 2rem;
+        }
+
+        .form-step {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .radio-item input[type="radio"] {
+            width: auto;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .form-group.has-error input,
+        .form-group.has-error select,
+        .form-group.has-error textarea {
+            border-color: #dc3545;
+        }
+
+        .radio-group.has-error {
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .review-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .review-section h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .review-section p {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .review-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #28a745;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-message h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .stepper {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .step::after {
+                display: none;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .radio-group {
+                flex-direction: column;
+            }
+
+            .form-navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Application Form</h1>
+            <p>Please fill out all required information</p>
+        </div>
+
+        <div class="stepper">
+            <div class="step active">
+                <div class="step-number">1</div>
+                <div class="step-label">Personal Info</div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-label">Contact Info</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-label">Background</div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-label">Review</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="stepProgress"></div>
+        </div>
+
+        <form id="applicationForm">
+            <div class="form-container">
+                <!-- Step 1: Personal Information -->
+                <div class="form-step active" data-step="1">
+                    <h3 style="margin-bottom: 1.5rem; color: #333;">Personal Information</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                            <div class="error-message">Please enter your first name</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="middleName">Middle Name</label>
+                            <input type="text" id="middleName" name="middleName">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                            <div class="error-message">Please enter your last name</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth *</label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                            <div class="error-message">Please select your date of birth</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Age *</label>
+                            <input type="number" id="age" name="age" min="18" max="100" required>
+                            <div class="error-message">Please enter your age</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Gender *</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="male" name="gender" value="Male" required>
+                                <label for="male">Male</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="female" name="gender" value="Female" required>
+                                <label for="female">Female</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="other" name="gender" value="Other" required>
+                                <label for="other">Other</label>
+                            </div>
+                        </div>
+                        <div class="error-message">Please select your gender</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nationality">Nationality *</label>
+                            <select id="nationality" name="nationality" required>
+                                <option value="">Select Nationality</option>
+                                <option value="Filipino">Filipino</option>
+                                <option value="American">American</option>
+                                <option value="Chinese">Chinese</option>
+                                <option value="Japanese">Japanese</option>
+                                <option value="Korean">Korean</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="error-message">Please select your nationality</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="civilStatus">Civil Status *</label>
+                            <select id="civilStatus" name="civilStatus" required>
+                                <option value="">Select Civil Status</option>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                            </select>
+                            <div class="error-message">Please select your civil status</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Contact Information -->
+                <div class="form-step" data-step="2">
+                    <h3 style="margin-bottom: 1.5rem; color: #333;">Contact Information</h3>
+                    
+                    <div class="form-group">
+                        <label for="streetAddress">Street Address *</label>
+                        <input type="text" id="streetAddress" name="streetAddress" required>
+                        <div class="error-message">Please enter your street address</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="barangay">Barangay *</label>
+                            <input type="text" id="barangay" name="barangay" required>
+                            <div class="error-message">Please enter your barangay</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="district">District *</label>
+                            <input type="text" id="district" name="district" required>
+                            <div class="error-message">Please enter your district</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" required>
+                            <div class="error-message">Please enter your city</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="province">Province *</label>
+                            <input type="text" id="province" name="province" required>
+                            <div class="error-message">Please enter your province</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="region">Region *</label>
+                            <select id="region" name="region" required>
+                                <option value="">Select Region</option>
+                                <option value="NCR">National Capital Region (NCR)</option>
+                                <option value="CAR">Cordillera Administrative Region (CAR)</option>
+                                <option value="Region I">Region I - Ilocos Region</option>
+                                <option value="Region II">Region II - Cagayan Valley</option>
+                                <option value="Region III">Region III - Central Luzon</option>
+                                <option value="Region IV-A">Region IV-A - CALABARZON</option>
+                                <option value="Region IV-B">Region IV-B - MIMAROPA</option>
+                                <option value="Region V">Region V - Bicol Region</option>
+                                <option value="Region VI">Region VI - Western Visayas</option>
+                                <option value="Region VII">Region VII - Central Visayas</option>
+                                <option value="Region VIII">Region VIII - Eastern Visayas</option>
+                                <option value="Region IX">Region IX - Zamboanga Peninsula</option>
+                                <option value="Region X">Region X - Northern Mindanao</option>
+                                <option value="Region XI">Region XI - Davao Region</option>
+                                <option value="Region XII">Region XII - SOCCSKSARGEN</option>
+                                <option value="Region XIII">Region XIII - Caraga</option>
+                                <option value="BARMM">Bangsamoro Autonomous Region in Muslim Mindanao (BARMM)</option>
+                            </select>
+                            <div class="error-message">Please select your region</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="zipCode">Zip Code *</label>
+                            <input type="text" id="zipCode" name="zipCode" required>
+                            <div class="error-message">Please enter your zip code</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactNumber">Contact Number *</label>
+                            <input type="tel" id="contactNumber" name="contactNumber" required>
+                            <div class="error-message">Please enter your contact number</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="emailAddress">Email Address *</label>
+                            <input type="email" id="emailAddress" name="emailAddress" required>
+                            <div class="error-message">Please enter a valid email address</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Background Information -->
+                <div class="form-step" data-step="3">
+                    <h3 style="margin-bottom: 1.5rem; color: #333;">Background Information</h3>
+                    
+                    <div class="form-group">
+                        <label for="highestEducation">Highest Educational Attainment *</label>
+                        <select id="highestEducation" name="highestEducation" required>
+                            <option value="">Select Education Level</option>
+                            <option value="Elementary">Elementary</option>
+                            <option value="High School">High School</option>
+                            <option value="Senior High School">Senior High School</option>
+                            <option value="College Graduate">College Graduate</option>
+                            <option value="Post Graduate">Post Graduate</option>
+                            <option value="Vocational">Vocational</option>
+                        </select>
+                        <div class="error-message">Please select your highest educational attainment</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="employmentStatus">Employment Status *</label>
+                        <select id="employmentStatus" name="employmentStatus" required>
+                            <option value="">Select Employment Status</option>
+                            <option value="Employed">Employed</option>
+                            <option value="Unemployed">Unemployed</option>
+                            <option value="Self-employed">Self-employed</option>
+                            <option value="Student">Student</option>
+                            <option value="Retired">Retired</option>
+                        </select>
+                        <div class="error-message">Please select your employment status</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="workExperience">Work Experience</label>
+                        <textarea id="workExperience" name="workExperience" rows="4" placeholder="Briefly describe your work experience (optional)"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="skills">Skills</label>
+                        <textarea id="skills" name="skills" rows="3" placeholder="List your skills (optional)"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <label for="terms">I agree to the terms and conditions *</label>
+                        </div>
+                        <div class="error-message">Please accept the terms and conditions</div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Review -->
+                <div class="form-step" data-step="4">
+                    <h3 style="margin-bottom: 1.5rem; color: #333;">Review Your Information</h3>
+                    <p style="margin-bottom: 1.5rem; color: #666;">Please review your information before submitting.</p>
+                    
+                    <div id="reviewContent" class="review-grid"></div>
+                    
+                    <div class="form-group" style="margin-top: 1.5rem;">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="confirmAccuracy" name="confirmAccuracy" required>
+                            <label for="confirmAccuracy">I confirm that all information provided is accurate *</label>
+                        </div>
+                        <div class="error-message">Please confirm the accuracy of your information</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <button type="button" id="prevBtn" class="btn btn-secondary" onclick="previousStep()" style="display: none;">
+                    ← Previous
+                </button>
+                <div>
+                    <button type="button" id="nextBtn" class="btn btn-primary" onclick="nextStep()">
+                        Next →
+                    </button>
+                    <button type="button" id="submitBtn" class="btn btn-success" onclick="submitForm()" style="display: none;">
+                        Submit Application
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="loading" id="loadingDiv">
+            <div class="spinner"></div>
+            <p>Submitting your application...</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <h3>Application Submitted Successfully!</h3>
+            <p>Thank you for your application. We will contact you soon.</p>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Form validation and navigation
+        function validateStep(step) {
+            const stepElement = document.querySelector(`[data-step="${step}"]`);
+            const requiredFields = stepElement.querySelectorAll('[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                const formGroup = field.closest('.form-group') || field.closest('.field-group');
+                const errorMessage = formGroup ? formGroup.querySelector('.error-message') : null;
+                
+                // Clear previous error state
+                if (formGroup) {
+                    formGroup.classList.remove('has-error');
+                }
+                if (errorMessage) {
+                    errorMessage.classList.remove('show');
+                }
+
+                // Validate field
+                let fieldValid = true;
+                
+                if (field.type === 'radio') {
+                    const radioGroup = document.querySelectorAll(`[name="${field.name}"]`);
+                    fieldValid = Array.from(radioGroup).some(radio => radio.checked);
+                    if (!fieldValid) {
+                        const radioContainer = field.closest('.radio-group');
+                        if (radioContainer) {
+                            radioContainer.classList.add('has-error');
+                        }
+                    }
+                } else if (field.type === 'checkbox' && (field.id === 'terms' || field.id === 'confirmAccuracy')) {
+                    fieldValid = field.checked;
+                } else if (field.type === 'email') {
+                    fieldValid = field.value.trim() !== '' && field.validity.valid;
+                } else {
+                    fieldValid = field.value.trim() !== '';
+                }
+
+                if (!fieldValid) {
+                    isValid = false;
+                    if (formGroup) {
+                        formGroup.classList.add('has-error');
+                    }
+                    if (errorMessage) {
+                        errorMessage.classList.add('show');
+                    }
+                }
+            });
+
+            return isValid;
+        }
+
+        function updateStepper() {
+            const steps = document.querySelectorAll('.step');
+            const progressBar = document.getElementById('stepProgress');
+            
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 < currentStep) {
+                    step.classList.add('completed');
+                } else if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+
+            // Update progress bar
+            const progressPercent = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            progressBar.style.width = progressPercent + '%';
+        }
+
+        function showStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+            
+            // Show current step
+            const currentStepElement = document.querySelector(`[data-step="${step}"]`);
+            if (currentStepElement) {
+                currentStepElement.classList.add('active');
+            }
+
+            // Update navigation buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            prevBtn.style.display = step === 1 ? 'none' : 'inline-flex';
+            
+            if (step === totalSteps) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-flex';
+            } else {
+                nextBtn.style.display = 'inline-flex';
+                submitBtn.style.display = 'none';
+            }
+
+            // Update review content if on step 4
+            if (step === 4) {
+                updateReviewContent();
+            }
+        }
+
+        function nextStep() {
+            if (validateStep(currentStep)) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    showStep(currentStep);
+                    updateStepper();
+                }
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+                updateStepper();
+            }
+        }
+
+        function updateReviewContent() {
+            const form = document.getElementById('applicationForm');
+            const formData = new FormData(form);
+            const reviewContent = document.getElementById('reviewContent');
+            
+            let html = '';
+            
+            // Personal Information
+            html += '<div class="review-section"><h4>Personal Information</h4>';
+            html += `<p><strong>Name:</strong> ${formData.get('firstName')} ${formData.get('middleName') || ''} ${formData.get('lastName')}</p>`;
+            html += `<p><strong>Date of Birth:</strong> ${formData.get('dateOfBirth')}</p>`;
+            html += `<p><strong>Gender:</strong> ${formData.get('gender')}</p>`;
+            html += `<p><strong>Age:</strong> ${formData.get('age')}</p>`;
+            html += `<p><strong>Nationality:</strong> ${formData.get('nationality')}</p>`;
+            html += `<p><strong>Civil Status:</strong> ${formData.get('civilStatus')}</p></div>`;
+            
+            // Contact Information
+            html += '<div class="review-section"><h4>Contact Information</h4>';
+            html += `<p><strong>Address:</strong> ${formData.get('streetAddress')}, ${formData.get('barangay')}, ${formData.get('district')}</p>`;
+            html += `<p><strong>City:</strong> ${formData.get('city')}, ${formData.get('province')}, ${formData.get('region')}</p>`;
+            html += `<p><strong>Zip Code:</strong> ${formData.get('zipCode')}</p>`;
+            html += `<p><strong>Contact Number:</strong> ${formData.get('contactNumber')}</p>`;
+            html += `<p><strong>Email:</strong> ${formData.get('emailAddress')}</p></div>`;
+            
+            // Background Information
+            html += '<div class="review-section"><h4>Background Information</h4>';
+            html += `<p><strong>Education:</strong> ${formData.get('highestEducation')}</p>`;
+            html += `<p><strong>Employment Status:</strong> ${formData.get('employmentStatus')}</p>`;
+            html += `<p><strong>Work Experience:</strong> ${formData.get('workExperience') || 'None specified'}</p>`;
+            html += `<p><strong>Skills:</strong> ${formData.get('skills') || 'None specified'}</p></div>`;
+            
+            reviewContent.innerHTML = html;
+        }
+
+        // Spreadsheet Database Integration
+        async function submitForm() {
+            if (!validateStep(currentStep)) {
+                return;
+            }
+
+            const form = document.getElementById('applicationForm');
+            const formData = new FormData(form);
+            const loadingDiv = document.getElementById('loadingDiv');
+            const successMessage = document.getElementById('successMessage');
+            const formContainer = document.querySelector('.form-container');
+            const formNavigation = document.querySelector('.form-navigation');
+
+            // Show loading
+            formContainer.style.display = 'none';
+            formNavigation.style.display = 'none';
+            loadingDiv.classList.add('show');
+
+            try {
+                // Prepare data for Google Sheets
+                const submissionData = {
+                    timestamp: new Date().toISOString(),
+                    firstName: formData.get('firstName'),
+                    middleName: formData.get('middleName') || '',
+                    lastName: formData.get('lastName'),
+                    dateOfBirth: formData.get('dateOfBirth'),
+                    age: formData.get('age'),
+                    gender: formData.get('gender'),
+                    nationality: formData.get('nationality'),
+                    civilStatus: formData.get('civilStatus'),
+                    streetAddress: formData.get('streetAddress'),
+                    barangay: formData.get('barangay'),
+                    district: formData.get('district'),
+                    city: formData.get('city'),
+                    province: formData.get('province'),
+                    region: formData.get('region'),
+                    zipCode: formData.get('zipCode'),
+                    contactNumber: formData.get('contactNumber'),
+                    emailAddress: formData.get('emailAddress'),
+                    highestEducation: formData.get('highestEducation'),
+                    employmentStatus: formData.get('employmentStatus'),
+                    workExperience: formData.get('workExperience') || '',
+                    skills: formData.get('skills') || '',
+                    applicationId: 'APP-' + Date.now()
+                };
+
+                // Submit to Google Sheets via Google Apps Script Web App
+                // Replace 'YOUR_WEBAPP_URL' with your actual Google Apps Script Web App URL
+                const webAppUrl = 'https://script.google.com/macros/s/YOUR_WEBAPP_URL/exec';
+                
+                const response = await fetch(webAppUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(submissionData)
+                });
+
+                // Simulate processing time
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Show success message
+                loadingDiv.classList.remove('show');
+                successMessage.classList.add('show');
+
+                // Optional: Reset form after successful submission
+                // form.reset();
+                // currentStep = 1;
+                // showStep(currentStep);
+                // updateStepper();
+
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                
+                // Hide loading and show error
+                loadingDiv.classList.remove('show');
+                formContainer.style.display = 'block';
+                formNavigation.style.display = 'flex';
+                
+                alert('There was an error submitting your application. Please try again.');
+            }
+        }
+
+        // Initialize form
+        document.addEventListener('DOMContentLoaded', function() {
+            showStep(1);
+            updateStepper();
+            
+            // Auto-calculate age based on date of birth
+            const dobInput = document.getElementById('dateOfBirth');
+            const ageInput = document.getElementById('age');
+            
+            dobInput.addEventListener('change', function() {
+                if (this.value) {
+                    const birthDate = new Date(this.value);
+                    const today = new Date();
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
+                    
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                        age--;
+                    }
+                    
+                    ageInput.value = age;
+                }
+            });
+
+            // Format contact number
+            const contactInput = document.getElementById('contactNumber');
+            contactInput.addEventListener('input', function() {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    if (value.startsWith('63')) {
+                        value = '+' + value;
+                    } else if (value.startsWith('09')) {
+                        value = '+63' + value.substring(1);
+                    }
+                }
+                this.value = value;
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA') {
+                event.preventDefault();
+                if (currentStep < totalSteps) {
+                    nextStep();
+                } else {
+                    submitForm();
+                }
+            }
+        });
+
+        // Auto-save to localStorage (for draft functionality)
+        function autoSave() {
+            const form = document.getElementById('applicationForm');
+            const formData = new FormData(form);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            // Note: localStorage is not available in Claude artifacts
+            // In a real implementation, you would use:
+            // localStorage.setItem('applicationDraft', JSON.stringify(data));
+        }
+
+        // Load draft from localStorage
+        function loadDraft() {
+            // Note: localStorage is not available in Claude artifacts
+            // In a real implementation, you would use:
+            // const draft = localStorage.getItem('applicationDraft');
+            // if (draft) {
+            //     const data = JSON.parse(draft);
+            //     Object.keys(data).forEach(key => {
+            //         const field = document.querySelector(`[name="${key}"]`);
+            //         if (field) {
+            //             if (field.type === 'radio') {
+            //                 const radioButton = document.querySelector(`[name="${key}"][value="${data[key]}"]`);
+            //                 if (radioButton) radioButton.checked = true;
+            //             } else if (field.type === 'checkbox') {
+            //                 field.checked = data[key] === 'on';
+            //             } else {
+            //                 field.value = data[key];
+            //             }
+            //         }
+            //     });
+            // }
+        }
+
+        // Save draft on form change
+        document.getElementById('applicationForm').addEventListener('change', autoSave);
+        document.getElementById('applicationForm').addEventListener('input', autoSave);
+
+        // Print functionality
+        function printApplication() {
+            const printContent = document.getElementById('reviewContent').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Application Form</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .review-section { margin-bottom: 20px; }
+                        h4 { color: #333; border-bottom: 2px solid #667eea; padding-bottom: 5px; }
+                        p { margin: 5px 0; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Application Form</h1>
+                    <div>${printContent}</div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Export to PDF (using browser's print to PDF)
+        function exportToPDF() {
+            printApplication();
+        }
+
+        // Reset form
+        function resetForm() {
+            if (confirm('Are you sure you want to reset the form? All data will be lost.')) {
+                document.getElementById('applicationForm').reset();
+                currentStep = 1;
+                showStep(currentStep);
+                updateStepper();
+                // localStorage.removeItem('applicationDraft'); // In real implementation
+            }
+        }
+    </script>
+
+    <!-- Google Apps Script Integration Instructions -->
+    <script>
+        /*
+        GOOGLE APPS SCRIPT SETUP INSTRUCTIONS:
+        
+        1. Go to script.google.com
+        2. Create a new project
+        3. Replace the default code with the following:
+
+        function doPost(e) {
+            try {
+                const data = JSON.parse(e.postData.contents);
+                const sheet = SpreadsheetApp.openById('YOUR_SPREADSHEET_ID').getActiveSheet();
+                
+                // Check if headers exist, if not, add them
+                if (sheet.getLastRow() === 0) {
+                    const headers = [
+                        'Timestamp', 'Application ID', 'First Name', 'Middle Name', 'Last Name',
+                        'Date of Birth', 'Age', 'Gender', 'Nationality', 'Civil Status',
+                        'Street Address', 'Barangay', 'District', 'City', 'Province',
+                        'Region', 'Zip Code', 'Contact Number', 'Email Address',
+                        'Highest Education', 'Employment Status', 'Work Experience', 'Skills'
+                    ];
+                    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+                }
+                
+                // Add the data
+                const row = [
+                    data.timestamp, data.applicationId, data.firstName, data.middleName, data.lastName,
+                    data.dateOfBirth, data.age, data.gender, data.nationality, data.civilStatus,
+                    data.streetAddress, data.barangay, data.district, data.city, data.province,
+                    data.region, data.zipCode, data.contactNumber, data.emailAddress,
+                    data.highestEducation, data.employmentStatus, data.workExperience, data.skills
+                ];
+                
+                sheet.appendRow(row);
+                
+                return ContentService.createTextOutput(JSON.stringify({success: true}))
+                    .setMimeType(ContentService.MimeType.JSON);
+                    
+            } catch (error) {
+                return ContentService.createTextOutput(JSON.stringify({error: error.toString()}))
+                    .setMimeType(ContentService.MimeType.JSON);
+            }
+        }
+        
+        4. Deploy as a web app:
+           - Click "Deploy" > "New deployment"
+           - Choose "Web app" as type
+           - Set execute as "Me"
+           - Set access to "Anyone"
+           - Click "Deploy"
+           - Copy the web app URL
+        
+        5. Create a Google Sheet:
+           - Go to sheets.google.com
+           - Create a new spreadsheet
+           - Copy the spreadsheet ID from the URL
+        
+        6. Update the form:
+           - Replace 'YOUR_WEBAPP_URL' with your web app URL
+           - Replace 'YOUR_SPREADSHEET_ID' in the Apps Script with your spreadsheet ID
+        
+        ALTERNATIVE: Use Google Forms API or other services like Formspree, Netlify Forms, etc.
+        */
+    </script>

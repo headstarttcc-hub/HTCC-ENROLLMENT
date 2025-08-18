@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HEADSTART APPLICATION</title>
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- ===== RESET & BASIC LAYOUT ===== -->
+  <style>
+/* ===== GLOBAL RESET ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ===== HEADER ===== */
+header {
+  background: #ffffffdd;
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+header img {
+  height: 48px;
+}
+
+/* ===== MAIN CONTAINER ===== */
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.application-container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 12px 35px rgba(0,0,0,.15);
+  width: 100%;
+  max-width: 1000px;
+  padding: 2.5rem 2rem;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* ===== FORM HEADER ===== */
+.form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.form-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3246a8;
+}
+.form-header p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* ===== STEPPER ===== */
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 2rem;
+}
+.step-progress {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 5px;
+  background: #3246a8;
+  transform: translateY(-50%);
+  transition: width 0.4s ease;
+  width: 0;
+  z-index: 0;
+  border-radius: 4px;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  cursor: pointer;
+  z-index: 1;
+}
+.step-number {
+  height: 38px;
+  width: 38px;
+  border-radius: 50%;
+  background: #e4e6f0;
+  color: #555;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.step-title {
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+  color: #777;
+}
+.step.active .step-number,
+.step.completed .step-number {
+  background: #3246a8;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(50,70,168,0.3);
+}
+.step.completed .step-title {
+  color: #3246a8;
+}
+
+/* ===== FORM GRID ===== */
+.form-step { display: none; }
+.form-step.active { display: block; }
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.form-group, .field-group {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+}
+.form-group label, .field-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+.form-group input, 
+.form-group select,
+.field-group input,
+.field-group select {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+.form-group input:focus, 
+.form-group select:focus {
+  border-color: #3246a8;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(50,70,168,0.1);
+}
+
+/* ===== RADIO BUTTONS ===== */
+.radio-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+/* ===== ERROR MESSAGE ===== */
+.error-message {
+  font-size: 0.8rem;
+  color: #d93025;
+  display: none;
+  margin-top: 0.25rem;
+}
+.error-message.show { display: block; }
+.form-group.has-error input, 
+.form-group.has-error select {
+  border-color: #d93025;
+  box-shadow: 0 0 0 2px rgba(217,48,37,0.15);
+}
+
+/* ===== NAVIGATION BUTTONS ===== */
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.btn {
+  padding: 0.65rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: all 0.3s ease;
+}
+.btn-primary {
+  background: #3246a8;
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #25348f;
+}
+.btn-secondary {
+  background: #f0f0f0;
+  color: #333;
+}
+.btn-secondary:hover {
+  background: #ddd;
+}
+
+/* ===== SUCCESS STEP ===== */
+#successStep {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2.5rem;
+}
+.success-message {
+  max-width: 460px;
+  animation: popIn 0.4s ease-in-out;
+}
+.success-icon i {
+  font-size: 3.5rem;
+  color: #3ab34f;
+  margin-bottom: 1rem;
+}
+
+/* ===== MODAL - FIXED STYLES ===== */
+.modal {
+  display: none; 
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.show {
+  display: flex !important;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  animation: popIn 0.3s ease-in-out;
+}
+.modal-content h2 {
+  margin-bottom: 1rem;
+  color: #3246a8;
+}
+.modal-content p {
+  margin-bottom: 1.5rem;
+}
+
+.modal-content button {
+  padding: 0.75rem 1.5rem;
+  background: #3246a8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.modal-content button:hover {
+  background: #25348f;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: #182848;
+  color: #fff;
+  padding: 50px 20px;
+  font-size: 14px;
+}
+.footer-container {
+  max-width: 1200px;
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 30px;
+}
+footer h3 { font-size: 18px; margin-bottom: 15px; }
+footer p  { line-height: 1.6; }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(10px);}
+  to {opacity:1; transform:translateY(0);}
+}
+@keyframes popIn {
+  from {transform:scale(0.9); opacity:0;}
+  to {transform:scale(1); opacity:1;}
+}
+
+  </style>
+</head>
+<body>
+  <!-- ===== Header ===== -->
+  <header>
+    <div class="logo">
+      <a href="index.html">
+      <img src="htc_logo.png" alt="Headstart Training Center Logo">
+      </a>
+    </div>
+  </header>
+
+  <!-- ===== Main content ===== -->
+  <main>
+    <div class="application-container">
+
+      <div class="form-header">
+        <h1><i class="fas fa-file-alt"></i> Enrollment Form</h1>
+        <p>Complete all steps to submit your application</p>
+      </div>
+
+      <!-- ===== Stepper indicator ===== -->
+      <div class="stepper" id="stepper">
+        <div class="step-progress" id="stepProgress"></div>
+
+        <div class="step active" data-step="1">
+          <div class="step-number">1</div>
+          <div class="step-title">Personal Info</div>
+        </div>
+        <div class="step" data-step="2">
+          <div class="step-number">2</div>
+          <div class="step-title">Contact Details</div>
+        </div>
+        <div class="step" data-step="3">
+          <div class="step-number">3</div>
+          <div class="step-title">Experience</div>
+        </div>
+        <div class="step" data-step="4">
+          <div class="step-number">4</div>
+          <div class="step-title">Review &amp; Submit</div>
+        </div>
+      </div>
+
+      <!-- ===== FORM START ===== -->
+      <form action="https://script.google.com/macros/s/AKfycbwSu19MC4qBsOsz7pFkixnoTeaX4DciTkLACk1ZHnkYv3tqwLBtLA5KB0uAksKIQZTZ/exec" 
+      method="POST" id="applicationForm" novalidate>
+
+        <!-- === STEP 1 === -->
+        <div class="form-step active" data-step="1">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="lastName">Surname *</label>
+              <input type="text" id="lastName" name="lastName" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="firstName">First Name *</label>
+              <input type="text" id="firstName" name="firstName" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="middleName">Middle Name *</label>
+              <input type="text" id="middleName" name="middleName" required>
+              <div class="error-message">This field is required</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dateOfBirth">Date of Birth *</label>
+              <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label>Gender *</label>
+              <div class="radio-group gender-box">
+                <label><input type="radio" name="gender" value="male" required> Male</label>
+                <label><input type="radio" name="gender" value="female"> Female</label>
+              </div>
+              <div class="error-message">Please select your gender</div>
+            </div>
+            <div class="form-group">
+              <label for="age">Age *</label>
+              <input type="number" id="age" name="age" min="1" max="120" required>
+              <div class="error-message">This field is required</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nationality">Nationality *</label>
+              <select id="nationality" name="nationality" required>
+                <option value="">Select…</option>
+                <option value="Philippines">Philippines</option>
+                <option value="United States">United States</option>
+                <option value="Canada">Canada</option>
+                <option value="Australia">Australia</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="India">India</option>
+                <option value="China">China</option>
+                <option value="Japan">Japan</option>
+                <option value="Other">Other</option>
+              </select>
+              <div class="error-message">Please select your nationality</div>
+            </div>
+            <div class="form-group">
+              <label for="civilStatus">Civil Status *</label>
+              <select id="civilStatus" name="civilStatus" required>
+                <option value="">Select…</option>
+                <option value="Single">Single</option>
+                <option value="Married">Married</option>
+                <option value="Widowed">Widowed</option>
+                <option value="Divorced">Divorced</option>
+                <option value="Separated">Separated</option>
+              </select>
+              <div class="error-message">Please select your civil status</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- === STEP 2 === -->
+        <div class="form-step" data-step="2">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="streetAddress">Street Address *</label>
+              <input type="text" id="streetAddress" name="streetAddress" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="barangay">Barangay *</label>
+              <input type="text" id="barangay" name="barangay" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="district">District *</label>
+              <input type="text" id="district" name="district" required>
+              <div class="error-message">This field is required</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="city">City/Municipality *</label>
+              <input type="text" id="city" name="city" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="province">Province *</label>
+              <input type="text" id="province" name="province" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="region">Region *</label>
+              <input type="text" id="region" name="region" required>
+              <div class="error-message">This field is required</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="zipCode">Zip Code *</label>
+              <input type="text" id="zipCode" name="zipCode" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="contactNumber">Contact Number *</label>
+              <input type="tel" id="contactNumber" name="contactNumber" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="emailAddress">Email Address *</label>
+              <input type="email" id="emailAddress" name="emailAddress" required>
+              <div class="error-message">Please enter a valid email address</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- === STEP 3 === -->
+        <div class="form-step" data-step="3">
+          <h3 style="text-align:center;margin-bottom:1.5rem;">Background Information</h3>
+
+          <div class="step3-grid">
+            <div class="field-group">
+              <label for="highestEducation">Highest Educational Attainment *</label>
+              <select id="highestEducation" name="highestEducation" required>
+                <option value="">Select…</option>
+                <option value="Elementary">Elementary</option>
+                <option value="High School">High School</option>
+                <option value="Vocational">Vocational</option>
+                <option value="College">College</option>
+                <option value="Postgraduate">Postgraduate</option>
+              </select>
+              <div class="error-message">Please select your educational attainment</div>
+            </div>
+            <div class="field-group">
+              <label for="employmentStatus">Your Employment Status *</label>
+              <select id="employmentStatus" name="employmentStatus" required>
+                <option value="">Select…</option>
+                <option value="Employed">Employed</option>
+                <option value="Unemployed">Unemployed</option>
+                <option value="Self‑Employed">Self‑Employed</option>
+                <option value="Student">Student</option>
+                <option value="Retired">Retired</option>
+              </select>
+              <div class="error-message">Please select your employment status</div>
+            </div>
+            <div class="field-group">
+              <label for="workExperience">Work Experience</label>
+              <input type="text" id="workExperience" name="workExperience"
+                     placeholder="e.g. 2 years as cashier">
+              <div class="error-message">This field is required</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="mothersName">Mother's Name *</label>
+              <input type="text" id="mothersName" name="mothersName" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="mothersAge">Mother's Age *</label>
+              <input type="number" id="mothersAge" name="mothersAge" min="1" max="120" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="mothersEmploymentStatus">Mother's Employment Status *</label>
+              <select id="mothersEmploymentStatus" name="mothersEmploymentStatus" required>
+                <option value="">Select…</option>
+                <option value="Employed">Employed</option>
+                <option value="Unemployed">Unemployed</option>
+                <option value="Self‑Employed">Self‑Employed</option>
+                <option value="Retired">Retired</option>
+                <option value="Deceased">Deceased</option>
+              </select>
+              <div class="error-message">Please select mother's employment status</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fathersName">Father's Name *</label>
+              <input type="text" id="fathersName" name="fathersName" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="fathersAge">Father's Age *</label>
+              <input type="number" id="fathersAge" name="fathersAge" min="1" max="120" required>
+              <div class="error-message">This field is required</div>
+            </div>
+            <div class="form-group">
+              <label for="fathersEmploymentStatus">Father's Employment Status *</label>
+              <select id="fathersEmploymentStatus" name="fathersEmploymentStatus" required>
+                <option value="">Select…</option>
+                <option value="Employed">Employed</option>
+                <option value="Unemployed">Unemployed</option>
+                <option value="Self‑Employed">Self‑Employed</option>
+                <option value="Retired">Retired</option>
+                <option value="Deceased">Deceased</option>
+              </select>
+              <div class="error-message">Please select father's employment status</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- === STEP 4 (review) === -->
+        <div class="form-step" data-step="4">
+          <h3 style="text-align:center;margin-bottom:1.5rem;">Review Your Information</h3>
+          <div id="reviewContent" style="margin-bottom:1.5rem; background:#f8f9fa; padding:1.5rem; border-radius:8px;"></div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="terms" required>
+            <label for="terms">I agree to the terms and conditions and privacy policy *</label>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="newsletter" name="newsletter">
+            <label for="newsletter">Subscribe to our newsletter for job updates</label>
+          </div>
+        </div>
+
+        <!-- === SUCCESS STEP (displayed after submission) === -->
+        <div class="form-step" id="successStep" style="display:none">
+          <div class="success-message">
+            <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+            <h2>Application Submitted Successfully!</h2>
+            <p>Thank you for your application. We have received your information.</p>
+            <p>Application ID: <strong id="applicationId"></strong></p>
+            <p>You will receive a confirmation email shortly.</p>
+            <button type="button" class="btn btn-primary" onclick="resetForm()">
+              <i class="fas fa-plus"></i> Submit Another Application
+            </button>
+          </div>
+        </div>
+
+        <!-- === Navigation buttons === -->
+        <div class="form-navigation">
+          <button type="button" class="btn btn-secondary" id="prevBtn" onclick="previousStep()">
+            <i class="fas fa-arrow-left"></i> Previous
+          </button>
+          <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+            Next <i class="fas fa-arrow-right"></i>
+          </button>
+          <button type="submit" class="btn btn-primary" id="submitBtn" style="display:none">
+            <i class="fas fa-paper-plane"></i> Submit Application
+          </button>
+          
+          <!-- TEST BUTTON - Remove this after debugging -->
+          <button type="button" class="btn" style="background: #ff6b6b; color: white;" onclick="testModal()">
+            🧪 Test Modal
+          </button>
+        </div>
+
+        <!-- Hidden iframe for form submission -->
+        <!-- REMOVED: Not needed when using fetch() -->
+      </form>
+      <!-- ===== FORM END ===== -->
+    </div>
+  </main>
+
+  <!-- ===== MODAL - FIXED STRUCTURE ===== -->
+  <div id="submitModal" class="modal">
+    <div class="modal-content">
+      <h2>Application Submitted!</h2>
+      <p>Your application has been submitted successfully. Please wait for our response.</p>
+      <button id="modalOkBtn">Okay</button>
+    </div>
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <div class="footer-container">
+      <div class="column">
+        <h3>Headstart</h3>
+        <p>Computer training school</p>
+      </div>
+
+      <div class="column">
+        <h3>Contact Us</h3>
+        <p>Email: headstartcenter1@gmail.com<br />Phone: 0968&nbsp;447&nbsp;1790</p>
+      </div>
+
+      <div class="column">
+        <h3>Locations</h3>
+        <p>
+          HTCC&nbsp;:&nbsp;Headstart Training Center Corp.<br />
+          4F St.&nbsp;Jerome Mansion, 82 Victoneta Ave.,<br />
+          Potrero&nbsp;1475 Malabon, Philippines<br />
+          Open: Mon‑Fri&nbsp;8 AM–4 PM
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== JavaScript ===== -->
+  <script>
+    const form = document.getElementById('applicationForm');
+    const steps = Array.from(document.querySelectorAll('.form-step[data-step]'));
+    const stepIndicators = Array.from(document.querySelectorAll('.stepper .step'));
+    const progressBar = document.getElementById('stepProgress');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitModal = document.getElementById('submitModal');
+    const modalOkBtn = document.getElementById('modalOkBtn');
+    
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    // IMPORTANT: Replace with your Google Apps Script Web App URL
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyorDGNKP8suTC04HtJvbsCP8LAqrEu7cD7STN0k98aXsihcpE6pbE0VIIavHSASF0YVg/exec';
+
+    // Global variable to track submission state
+    let isSubmitting = false;
+
+    // ===== Helper functions =====
+    function updateUI() {
+      // Show the current step and hide others
+      steps.forEach((stepEl) => {
+        const stepNumber = parseInt(stepEl.getAttribute('data-step'));
+        stepEl.classList.toggle('active', stepNumber === currentStep);
+      });
+
+      // Update stepper indicator states
+      stepIndicators.forEach((indicator, idx) => {
+        const stepNumber = idx + 1;
+        indicator.classList.toggle('active', stepNumber === currentStep);
+        indicator.classList.toggle('completed', stepNumber < currentStep);
+      });
+
+      // Fill progress bar
+      const progressPercent = ((currentStep - 1) / (totalSteps - 1)) * 100;
+      progressBar.style.width = progressPercent + '%';
+
+      // Toggle nav buttons
+      prevBtn.disabled = currentStep === 1;
+      nextBtn.style.display = currentStep < totalSteps ? 'inline-flex' : 'none';
+      submitBtn.style.display = currentStep === totalSteps ? 'inline-flex' : 'none';
+    }
+
+    function validateCurrentStep() {
+      const currentStepElement = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+      const requiredFields = currentStepElement.querySelectorAll('input[required], select[required]');
+
+      let isValid = true;
+
+      // Clear all previous error states
+      currentStepElement.querySelectorAll('.form-group, .field-group').forEach(group => {
+        group.classList.remove('has-error');
+        const errorMsg = group.querySelector('.error-message');
+        if (errorMsg) errorMsg.classList.remove('show');
+      });
+
+      currentStepElement.querySelectorAll('.radio-group').forEach(group => {
+        group.classList.remove('has-error');
+        const errorMsg = group.parentElement.querySelector('.error-message');
+        if (errorMsg) errorMsg.classList.remove('show');
+      });
+
+      requiredFields.forEach(field => {
+        if (field.type === 'radio') {
+          const radioGroup = currentStepElement.querySelectorAll(`input[name="${field.name}"]`);
+          const isRadioGroupValid = Array.from(radioGroup).some(radio => radio.checked);
+          if (!isRadioGroupValid) {
+            isValid = false;
+            const radioContainer = field.closest('.radio-group');
+            const formGroup = field.closest('.form-group');
+            if (radioContainer) {
+              radioContainer.classList.add('has-error');
+            }
+            if (formGroup) {
+              const errorMsg = formGroup.querySelector('.error-message');
+              if (errorMsg) errorMsg.classList.add('show');
+            }
+          }
+        } else if (field.type === 'email') {
+          const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!field.value.trim() || !emailPattern.test(field.value)) {
+            isValid = false;
+            const formGroup = field.closest('.form-group, .field-group');
+            if (formGroup) {
+              formGroup.classList.add('has-error');
+              const errorMsg = formGroup.querySelector('.error-message');
+              if (errorMsg) errorMsg.classList.add('show');
+            }
+          }
+        } else {
+          if (!field.value.trim()) {
+            isValid = false;
+            const formGroup = field.closest('.form-group, .field-group');
+            if (formGroup) {
+              formGroup.classList.add('has-error');
+              const errorMsg = formGroup.querySelector('.error-message');
+              if (errorMsg) errorMsg.classList.add('show');
+            }
+          }
+        }
+      });
+
+      return isValid;
+    }
+
+    function nextStep() {
+      if (!validateCurrentStep()) {
+        const firstError = document.querySelector('.form-group.has-error, .field-group.has-error, .radio-group.has-error');
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+
+      if (currentStep >= totalSteps) return;
+
+      if (currentStep === totalSteps - 1) {
+        buildReview();
+      }
+
+      currentStep++;
+      updateUI();
+    }
+
+    function previousStep() {
+      if (currentStep <= 1) return;
+      currentStep--;
+      updateUI();
+    }
+
+    function buildReview() {
+      const review = document.getElementById('reviewContent');
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      const filteredEntries = Object.entries(data).filter(([key]) =>
+        key !== 'newsletter' && key !== 'terms'
+      );
+
+      let reviewHTML = filteredEntries.map(([key, value]) => {
+        const displayName = toTitle(key);
+        const displayValue = value || '-';
+        return `<p><strong>${displayName}:</strong> ${displayValue}</p>`;
+      }).join('');
+
+      // Add newsletter subscription status
+      const newsletterChecked = document.getElementById('newsletter').checked;
+      reviewHTML += `<p><strong>Newsletter Subscription:</strong> ${newsletterChecked ? 'Yes' : 'No'}</p>`;
+
+      review.innerHTML = reviewHTML;
+    }
+
+    function toTitle(str) {
+      return str
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, s => s.toUpperCase())
+        .replace(/Name$/, ' Name')
+        .replace(/Address$/, ' Address')
+        .replace(/Status$/, ' Status')
+        .replace(/Number$/, ' Number')
+        .replace(/Code$/, ' Code')
+        .replace(/Of Birth/, ' of Birth')
+        .replace(/Employment Status/, 'Employment Status')
+        .replace(/Mothers/, "Mother's")
+        .replace(/Fathers/, "Father's");
+    }
+
+    // Add the missing handleFormResponse function
+    function handleFormResponse() {
+      console.log("handleFormResponse called");
+      // This function was being called by the iframe but wasn't defined
+      // We don't actually need it since we're using fetch instead
+    }
+
+    // GitHub Pages compatible modal function
+    function showModal() {
+      console.log("=== MODAL DEBUG START (GitHub Pages) ===");
+      
+      // Force DOM update by hiding and showing
+      submitModal.style.display = 'none';
+      submitModal.offsetHeight; // Force reflow
+      
+      // Set all necessary properties explicitly for GitHub Pages
+      submitModal.style.display = 'flex';
+      submitModal.style.position = 'fixed';
+      submitModal.style.top = '0';
+      submitModal.style.left = '0';
+      submitModal.style.width = '100%';
+      submitModal.style.height = '100%';
+      submitModal.style.backgroundColor = 'rgba(0,0,0,0.6)';
+      submitModal.style.justifyContent = 'center';
+      submitModal.style.alignItems = 'center';
+      submitModal.style.zIndex = '999999';
+      submitModal.style.visibility = 'visible';
+      submitModal.style.opacity = '1';
+      
+      // Also add the class for good measure
+      submitModal.classList.add('show');
+      
+      console.log("Modal forced to show with explicit styles");
+      console.log("Final modal display:", window.getComputedStyle(submitModal).display);
+      console.log("=== MODAL DEBUG END ===");
+    }
+
+    // Hide modal function
+    function hideModal() {
+      submitModal.classList.remove('show');
+      submitModal.style.display = 'none';
+    }
+
+    // Reset for a new submission
+    function resetForm() {
+      form.reset();
+      currentStep = 1;
+
+      document.getElementById('successStep').style.display = 'none';
+      document.querySelector('.form-navigation').style.display = 'flex';
+
+      steps.forEach(step => {
+        step.style.display = '';
+        step.classList.remove('active');
+      });
+
+      document.querySelector('.form-step[data-step="1"]').classList.add('active');
+
+      document.querySelectorAll('.form-group.has-error, .field-group.has-error, .radio-group.has-error').forEach(group => {
+        group.classList.remove('has-error');
+        const errorMsg = group.querySelector('.error-message');
+        if (errorMsg) errorMsg.classList.remove('show');
+      });
+
+      updateUI();
+    }
+
+    // Initialize the form
+    updateUI();
+
+    // Add real-time validation
+    document.querySelectorAll('input, select').forEach(field => {
+      field.addEventListener('blur', function() {
+        const formGroup = this.closest('.form-group, .field-group');
+        if (formGroup) {
+          const errorMsg = formGroup.querySelector('.error-message');
+          
+          if (this.hasAttribute('required') && !this.value.trim()) {
+            formGroup.classList.add('has-error');
+            if (errorMsg) errorMsg.classList.add('show');
+          } else if (this.type === 'email' && this.value.trim()) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(this.value)) {
+              formGroup.classList.add('has-error');
+              if (errorMsg) errorMsg.classList.add('show');
+            } else {
+              formGroup.classList.remove('has-error');
+              if (errorMsg) errorMsg.classList.remove('show');
+            }
+          } else {
+            formGroup.classList.remove('has-error');
+            if (errorMsg) errorMsg.classList.remove('show');
+          }
+        }
+      });
+    });
+
+    // Handle radio button validation
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const radioGroup = this.closest('.radio-group');
+        const formGroup = this.closest('.form-group');
+        if (radioGroup && formGroup) {
+          radioGroup.classList.remove('has-error');
+          const errorMsg = formGroup.querySelector('.error-message');
+          if (errorMsg) errorMsg.classList.remove('show');
+        }
+      });
+    });
+
+    // Prevent Enter key accidental submit
+    form.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" && event.target.type !== "textarea") {
+        event.preventDefault();
+      }
+    });
+
+    // Form submission handler - GitHub Pages compatible version
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      console.log("Form submit event triggered");
+
+      if (!validateCurrentStep()) {
+        console.log("Validation failed");
+        return;
+      }
+
+      if (isSubmitting) {
+        console.log("Already submitting, preventing duplicate");
+        return;
+      }
+      
+      isSubmitting = true;
+
+      // Disable submit button
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+      const formData = new FormData(form);
+      console.log("Starting form submission...");
+
+      // GitHub Pages compatible fetch with better error handling
+      fetch(WEB_APP_URL, { 
+        method: "POST", 
+        body: formData,
+        mode: 'no-cors',
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(() => {
+        console.log("Fetch request sent (no-cors mode)");
+        // In no-cors mode, we can't read the response, but we assume success
+        setTimeout(() => {
+          console.log("Showing modal after successful submission");
+          showModal();
+        }, 500); // Small delay to ensure the request is sent
+      })
+      .catch(err => {
+        console.error("Fetch error:", err);
+        // Even on error, we might want to show the modal since the form might have been submitted
+        console.log("Showing modal despite error (form might have been submitted)");
+        showModal();
+      })
+      .finally(() => {
+        // Reset button state
+        setTimeout(() => {
+          submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
+          submitBtn.disabled = false;
+          isSubmitting = false;
+        }, 1000);
+      });
+    });
+
+    // Modal OK button handler
+    modalOkBtn.addEventListener("click", () => {
+      console.log("OK button clicked");
+      hideModal();
+      window.location.href = "index.html";
+    });
+
+    // Close modal when clicking outside
+    submitModal.addEventListener("click", function(e) {
+      if (e.target === submitModal) {
+        hideModal();
+      }
+    });
+
+    // Test modal function (you can call this in browser console to test)
+    window.testModal = function() {
+      showModal();
+    };
+
+  </script>
+</body>
+</html>

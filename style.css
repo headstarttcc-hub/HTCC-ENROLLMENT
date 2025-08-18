@@ -1,0 +1,270 @@
+/* ==========  Variables & Base  ========== */
+:root {
+  --primary-dark: #3a3a7c;
+  --primary:       #4b4ba3;
+  --accent:        #e53935;
+  --accent-hover:  #c62828;
+  --text-dark:     #333;
+  --text-light:    #666;
+  --bg-light:      #f9f9f9;
+  --bg-page:       #f2f2f2;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-dark);
+  line-height: 1.5;
+}
+
+/* ==========  Navigation  ========== */
+nav {
+  background: var(--primary-dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+}
+
+.nav-logo-wrapper {
+  width: 62px;
+  height: 62px;
+  border: 2px solid #000;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-logo-wrapper img { width: 50px; height: 50px; object-fit: cover; }
+
+.nav-links { display: flex; gap: 20px; }
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* ==========  Hero  ========== */
+.top {
+  background: url('school-bg.png') center/cover no-repeat;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+.top .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
+.top-content {
+  position: relative;          /* above overlay */
+  display: flex;
+  gap: 40px;
+  max-width: 1000px;
+  padding: 20px;
+}
+.top-left {
+  width: 210px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;  /* optional */
+  border: 5px solid #000; /* keep outer border if you like */
+  border-radius: 100%; /* makes the container circular */
+  overflow: hidden;
+}
+
+.top-left img {
+  max-width: 85%;   /* prevent stretching */
+  max-height: 90%;  /* keep proportions */
+  object-fit: contain; /* preserve logo proportions */
+}
+
+.top-right h1 { font-size: 36px; margin: 0; }
+
+/* ==========  Courses  ========== */
+.services-section {
+  padding: 60px 20px;
+  background: var(--bg-light);
+  text-align: center;
+}
+.services-section h1 { font-size: 32px; margin-bottom: 40px; }
+
+.course-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.course-card {
+  width: 300px;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  text-decoration: none;
+  color: inherit;
+  transition: transform .2s;
+}
+.course-card:hover { transform: scale(1.03); }
+
+.course-img {
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.course-title {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.49);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+  text-align: center;
+  line-height: 1.3;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+  backdrop-filter: blur(1px);
+}
+
+.enroll-btn {
+  background: var(--accent);
+  color: #fff;
+  text-align: center;
+  font-weight: 700;
+  padding: 16px 0;
+  font-size: 16px;
+  transition: background .3s;
+}
+.course-card:hover .enroll-btn { background: var(--accent-hover); }
+
+/* ==========  About / Vision / Mission  ========== */
+.about-section,
+.vision,
+.mision {
+  padding: 60px 20px;
+  text-align: center;
+  background: #fff;
+}
+.about-section p,
+.vision p,
+.mision p {
+  max-width: 800px;
+  margin: 0 auto;
+  color: var(--text-light);
+}
+.about-section h1,
+.vision h1,
+.mision h1 { font-size: 32px; margin-bottom: 30px; }
+
+.info-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 60px 20px;
+  background: var(--bg-light);
+  border-bottom: 1px solid #ddd;
+}
+
+.info-section:nth-child(even) {
+  background: #fff;
+}
+
+.info-content {
+  flex: 1 1 500px;
+  max-width: 600px;
+  text-align: left;
+}
+
+.info-content h1 {
+  font-size: 32px;
+  margin-bottom: 20px;
+  position: relative;
+  color: var(--primary-dark);
+}
+.info-content h1 span {
+  color: var(--accent);
+}
+
+.info-content p {
+  color: var(--text-light);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.info-icon {
+  flex: 1 1 300px;
+  max-width: 300px;
+  text-align: center;
+}
+.info-icon img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  opacity: 0.9;
+  transition: transform 0.3s;
+}
+.info-icon img:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .info-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .info-content {
+    text-align: center;
+  }
+}
+
+
+/* ==========  Footer  ========== */
+footer {
+  background: var(--primary-dark);
+  color: #fff;
+  padding: 40px 20px;
+  font-size: 14px;
+}
+.footer-container {
+  max-width: 1200px;
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 30px;
+}
+footer .column { flex: 1 1 250px; }
+footer h3 { font-size: 18px; margin: 0 0 15px; }
+footer p  { margin: 0; line-height: 1.6; }
+
+/* ==========  Responsive  ========== */
+@media (max-width: 768px) {
+  .top-content { flex-direction: column; text-align: center; gap: 20px; }
+  .top-left   { width: 150px; height: 150px; }
+  .top-right h1 { font-size: 28px; }
+
+  .nav-links { gap: 15px; }
+  .nav-links a { font-size: 14px; }
+
+  .footer-container { flex-direction: column; }
+}
